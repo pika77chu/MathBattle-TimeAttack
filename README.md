@@ -405,7 +405,7 @@ damageTimer = 30;
 if (choices[selectedchoice] === result) {
 clear++;
 combo++;
-let damage = Math.floor(10*(time4**0.25)) + combo*2;
+let damage = Math.floor(10*(Math.max(1,time4)**0.25)) + combo*2;
 damageText = `-${damage}`;
 let gain = 0;
 gain += 100;
@@ -514,7 +514,7 @@ damageTimer = 30;
 if (choices[selectedchoice] === result) {
 clear++;
 combo++;
-let damage = Math.floor(10*(time4**0.25)) + combo*2;
+let damage = Math.floor(10*(Math.max(1,time4)**0.25)) + combo*2;
 damageText = `-${damage}`;
 let gain = 0;
 gain += 100;
@@ -665,7 +665,7 @@ damageTimer = 30;
 if (choices[selectedchoice] === result) {
 clear++;
 combo++;
-let damage = Math.floor(10*(time4**0.25)) + combo*2;
+let damage = Math.floor(10*(Math.max(1,time4)**0.25)) + combo*2;
 damageText = `-${damage}`;
 let gain = 0;
 gain += 100;
