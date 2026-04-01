@@ -408,15 +408,15 @@ combo++;
 let damage = Math.floor(10*(Math.max(1,time4)**0.25)) + combo*2;
 damageText = `-${damage}`;
 let gain = 0;
-gain += 100;
+gain += 50;
 gain += Math.max(time4,1)*10;
 gain += combo*20;
 score += Math.floor(gain*(1+combo*0.1));
 }else {
 damageText = "MISS";
+score -= 100+20*combo;
 combo = 0;
 unclear++;
-score -= 50+combo*10;
 score = Math.max(0,score);
 }
 choice2XY = JSON.parse(JSON.stringify(choiceXY[selectedchoice]));
@@ -441,10 +441,9 @@ timer4();
 enemies[difficult-1].hp = enemies[difficult-1].maxhp;
 enemies[difficult-1].realhp = enemies[difficult-1].maxhp;
 mode = 8;
-let clearBonus = clear * 50;
 let accuracy = clear / problem;
 let accuracyBonus = Math.floor(accuracy * 500);
-score += clearBonus + accuracyBonus;
+score += accuracyBonus;
 score *= difficult;
 score = Math.max(10,score);
 hiscore = Math.max(hiscore,score);
@@ -522,10 +521,10 @@ gain += Math.floor(time4,1)*10;
 gain += combo*20;
 score += Math.floor(gain*(1+combo*0.1));
 }else {
+score -= 100+20*combo;
 combo = 0;
 damageText = "MISS";
 unclear++;
-score -= 50+combo*10;
 score = Math.max(0,score);
 }
 choice2XY = JSON.parse(JSON.stringify(choiceXY[selectedchoice]));
@@ -554,10 +553,9 @@ timer4();
 enemies[difficult-1].hp = enemies[difficult-1].maxhp;
 enemies[difficult-1].realhp = enemies[difficult-1].maxhp;
 mode = 8;
-let clearBonus = clear * 50;
 let accuracy = clear / problem;
 let accuracyBonus = Math.floor(accuracy * 500);
-score += clearBonus + accuracyBonus;
+score += accuracyBonus;
 score *= difficult;
 score = Math.max(10,score);
 hiscore = Math.max(hiscore,score);
@@ -674,9 +672,9 @@ gain += Math.max(1,time4)*10;
 score += Math.floor(gain*(1+combo*0.1));
 }else {
 unclear++;
+score -= 100+20*combo;
 combo = 0;
 damageText = "MISS";
-score -= 50+combo*10;
 }
 choice2XY = JSON.parse(JSON.stringify(choiceXY[selectedchoice]));
 choice3XY = JSON.parse(JSON.stringify(choiceXY[selectedchoice]));
