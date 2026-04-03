@@ -220,7 +220,7 @@ ctx.textBaseline = "middle";
 ctx.fillStyle = "white";
 ctx.fillText("START",centerX,centerY);
 }else if (mode === 3) {
-ctx.font = `${canvas.height/2}px sans-serif`;
+ctx.font = `${canvas.height/3}px sans-serif`;
 ctx.textAlign = "center";
 ctx.textBaseline = "middle";
 ctx.fillStyle = "red";
