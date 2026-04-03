@@ -5,15 +5,42 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Math Battle - Time Attack</title>
+<style id="n8k3qp">
+#canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+#nameInput {
+  position: absolute;
+  left: 50%;
+  bottom: 20%;
+  transform: translateX(-50%);
+  z-index: 10;
+  font-size: 24px;
+  padding: 15px;
+  width: 60%;
+  max-width: 300px;
+}
+</style>
 </head>
 <body>
 <canvas id="canvas"></canvas>
+<input id="nameInput"
+type="text"
+placeholder="Enter your name (max 8, letters & numbers only)"
+maxlength="8"
+inputmode="latin"
+autocomplete="off">
 <script>
 const canvas = document.getElementById("canvas");
 const ctx = canvas.getContext("2d");
 canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
+document.getElementById("nameInput").style.top = `${canvas.height*0.7}px`;
 let mode = 0;
+let name = "";
+let data = {};
 let difficult = 1;
 let shiki = "";
 let result = 0;
@@ -54,8 +81,8 @@ choiceXY = [{x: canvas.width*0.05,y: canvas.height*0.6,w: canvas.width*0.4,h: ca
 {x: canvas.width*0.55,y: canvas.height*0.6,w: canvas.width*0.4,h: canvas.height*0.08},
 {x: canvas.width*0.05,y: canvas.height*0.75,w: canvas.width*0.4,h: canvas.height*0.08},
 {x: canvas.width*0.55,y: canvas.height*0.75,w: canvas.width*0.4,h: canvas.height*0.08}];
+document.getElementById("nameInput").style.top = `${canvas.height*0.7}px`;
 });
-
 function makeAnswer() {
 let kigous = ["×","÷","+","-"];
 let num = difficult*2;
@@ -105,6 +132,26 @@ return eval(answer);
 }
 
 function mode0Action() {
+let arr = Object.values(data);
+let ranking = [];
+if (arr.length > 0) {
+for (let i of arr) {
+let year = new Date().getFullYear();
+let month = new Date().getMonth()+1;
+let monthnumber = year*12+month;
+if (monthnumber === i.month) ranking.push(i);
+}
+if (ranking.length > 0) {
+ranking.sort((a,b) => b.score - a.score);
+let map = {};
+for (let r of ranking) {
+  if (!map[r.name] || map[r.name].score < r.score) {
+    map[r.name] = r;
+  }
+}
+ranking = Object.values(map);
+}
+}
 ctx.fillStyle = "blue";
 ctx.font = `${canvas.height*0.12}px sans-serif`;
 ctx.textAlign = "center";
@@ -112,7 +159,7 @@ ctx.textBaseline = "middle";
 ctx.fillText("Math Battle - Time Attack",canvas.width/2,canvas.height*0.1);
 for (let i = 0; i < 3; i++) {
 let x = canvas.width*0.1;
-let w = canvas.width*0.8;
+let w = canvas.width*0.3;
 let h = canvas.height*0.08;
 let spaceY = canvas.height*0.2;
 let y = spaceY+canvas.height*0.15*i;
@@ -126,11 +173,23 @@ ctx.textBaseline = "middle";
 ctx.fillStyle = "black";
 ctx.fillText(i === 0? "Easy" : i === 1? "Normal" : "Hard",x+w/2,y+h/2);
 }
-ctx.fillText(`Hold for 1 second to quit!`,canvas.width/2,canvas.height*0.92);
+ctx.fillText(`Hold for 1 second to quit!`,canvas.width/4,canvas.height*0.92);
 ctx.font = `${canvas.height*0.06}px sans-serif`;
-ctx.fillText(hiscore === 0? "" : `HISCORE: ${hiscore}`,canvas.width/2,canvas.height*0.8);
+ctx.fillText(hiscore === 0? "" : `HISCORE: ${hiscore}`,canvas.width/4,canvas.height*0.8);
+ctx.font = `${canvas.height*0.06}px sans-serif`;
+ctx.fillText(`This Month’s Ranking`,canvas.width/4*3,canvas.height*0.3);
+ctx.font = `${canvas.height*0.05}px sans-serif`;
+ctx.fillStyle = "black";
+ctx.textAlign = "center";
+ctx.textBaseline = "middle";
+for (let i = 0; i < Math.min(10,ranking.length); i++) {
+let text = `${i+1}. ${ranking[i].name}: ${ranking[i].score}`;
+ctx.fillText(text,canvas.width/4*3,canvas.height*0.4+i*canvas.height*0.05);
 }
+}
+
 function draw() {
+nameInput.style.display = (mode === 9) ? "block" : "none";
 if (mode !== 2) ctx.clearRect(0,0,canvas.width,canvas.height);
 if (mode === 0) {
 mode0Action();
@@ -268,7 +327,7 @@ ctx.font = `${canvas.height*0.05}px sans-serif`;
 ctx.textAlign = "center";
 ctx.textBaseline = "middle";
 ctx.fillStyle = "black";
-ctx.fillText(problem > 0? `${clear}/${problem} CorrectS` : "",canvas.width/8*7,canvas.height*0.05);
+ctx.fillText(problem > 0? `${clear}/${problem} Correct!` : "",canvas.width/8*7,canvas.height*0.05);
 ctx.fillText(enemies[difficult-1].name,canvas.width/2,canvas.height*0.05);
 let x = canvas.width/4;
 let y = canvas.height*0.13;
@@ -330,11 +389,29 @@ ctx.fillStyle = "black";
 ctx.fillText(`VICTORY!!`,canvas.width/2,canvas.height*0.4);
 ctx.fillText(`Correct Answers: ${clear}/${problem}`,canvas.width/2,canvas.height*0.6);
 ctx.fillText(`SCORE: ${score}`,canvas.width/2,canvas.height*0.75);
+}else if (mode === 9) {
+ctx.font = `${canvas.height*0.1}px sans-serif`;
+ctx.textAlign = "center";
+ctx.textBaseline = "middle";
+ctx.fillStyle = "black";
+ctx.fillText(`HI SCORE!!`,canvas.width/2,canvas.height*0.2);
+ctx.fillText(`Correct Answers: ${clear}/${problem}`,canvas.width/2,canvas.height*0.4);
+ctx.fillText(`SCORE: ${score}`,canvas.width/2,canvas.height*0.55);
+ctx.font = `${canvas.height*0.05}px sans-serif`;
+ctx.fillStyle = name.length > 0? "blue" : "gray";
+ctx.fillRect(canvas.width*0.3,canvas.height*0.8,canvas.width*0.4,canvas.height*0.08);
+ctx.fillStyle = "white";
+ctx.fillText(`Send`,canvas.width*0.5,canvas.height*0.84);
 }
 requestAnimationFrame(draw);
 }
 
-window.onload = () => {draw();}
+window.onload = () => {draw();};
+
+document.getElementById("nameInput").addEventListener("input",(e) => {
+nameInput.value = nameInput.value.replace(/[^a-zA-Z0-9]/g, "");
+name = nameInput.value;
+});
 
 document.addEventListener("keydown",(e) => {
 const key = e.key;
@@ -411,7 +488,7 @@ let gain = 0;
 gain += 50;
 gain += Math.max(time4,1)*10;
 gain += combo*20;
-score += Math.floor(gain*(1+combo*0.1));
+score += Math.floor(gain*(1+Math.min(combo,10)*0.05));
 }else {
 damageText = "MISS";
 score -= 100+20*combo;
@@ -440,16 +517,22 @@ timer4();
 }else{
 enemies[difficult-1].hp = enemies[difficult-1].maxhp;
 enemies[difficult-1].realhp = enemies[difficult-1].maxhp;
-mode = 8;
+name = "";
 let accuracy = clear / problem;
 let accuracyBonus = Math.floor(accuracy * 500);
+score = Math.max(10,score-50*unclear);
 score += accuracyBonus;
 score *= difficult;
 score = Math.max(10,score);
+if (score > hiscore) mode = 9;
+else mode = 8;
 hiscore = Math.max(hiscore,score);
 localStorage.setItem("mathhiscore", hiscore);
 }
 }else if (mode === 8 && key === " ") {
+mode = 0;
+}else if (mode === 9 && key === " " && name.length > 0) {
+sendScore(name,score);
 mode = 0;
 }
 });
@@ -461,7 +544,7 @@ let ty = e.clientY - rect.top;
 if (mode === 0) {
 for (let i = 0; i < 3; i++) {
 let x = canvas.width*0.1;
-let w = canvas.width*0.8;
+let w = canvas.width*0.3;
 let h = canvas.height*0.08;
 let spaceY = canvas.height*0.2;
 let y = spaceY+canvas.height*0.15*i;
@@ -519,7 +602,7 @@ let gain = 0;
 gain += 100;
 gain += Math.floor(time4,1)*10;
 gain += combo*20;
-score += Math.floor(gain*(1+combo*0.1));
+score += Math.floor(gain*(1+Math.min(combo,10)*0.05));
 }else {
 score -= 100+20*combo;
 combo = 0;
@@ -552,17 +635,29 @@ timer4();
 }else{
 enemies[difficult-1].hp = enemies[difficult-1].maxhp;
 enemies[difficult-1].realhp = enemies[difficult-1].maxhp;
-mode = 8;
+name = "";
 let accuracy = clear / problem;
 let accuracyBonus = Math.floor(accuracy * 500);
+score = Math.max(10,score-50*unclear);
 score += accuracyBonus;
 score *= difficult;
 score = Math.max(10,score);
+if (score > hiscore) mode = 9;
+else mode = 8;
 hiscore = Math.max(hiscore,score);
 localStorage.setItem("mathhiscore", hiscore);
 }
 }else if (mode === 8) {
 mode = 0;
+}else if (mode === 9 && name.length > 0) {
+let x = canvas.width*0.3;
+let y = canvas.height*0.8;
+let w = canvas.width*0.4;
+let h = canvas.height*0.08;
+if (tx >= x && tx <= x+w && ty >= y && ty <= y+h) {
+sendScore(name,score);
+mode = 0;
+}
 }
 });
 
@@ -669,7 +764,7 @@ let gain = 0;
 gain += 100;
 gain += combo*20;
 gain += Math.max(1,time4)*10;
-score += Math.floor(gain*(1+combo*0.1));
+score += Math.floor(gain*(1+Math.min(combo,10)*0.05));
 }else {
 unclear++;
 score -= 100+20*combo;
@@ -683,7 +778,43 @@ clearInterval(timerID4);
 }
 },1000);
 }
+
+function sendScore(name2,score2) {
+let year = new Date().getFullYear();
+let month = new Date().getMonth()+1;
+let monthnumber = year*12+month;
+push(ref(db,"ranking"),{
+name: name2,
+score: score2,
+month: monthnumber
+});
+}
+</script>
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-app.js";
+  import { getDatabase,ref,push,onValue} from "https://www.gstatic.com/firebasejs/12.11.0/firebase-database.js";
+  const firebaseConfig = {
+    apiKey: "AIzaSyDzZqE0jApUOlt73_fywU7_lyyLzsR7qcA",
+    authDomain: "date-bbe1b.firebaseapp.com",
+    databaseURL: "https://date-bbe1b-default-rtdb.firebaseio.com",
+    projectId: "date-bbe1b",
+    storageBucket: "date-bbe1b.firebasestorage.app",
+    messagingSenderId: "892728163379",
+    appId: "1:892728163379:web:3f3b5bcb0f8bbda35a7746",
+    measurementId: "G-5B0T2C2XQX"
+  };
+
+  // Initialize Firebase
+  const app = initializeApp(firebaseConfig);
+  const db = getDatabase(app);
+
+  window.db = db;
+  window.ref = ref;
+  window.push = push;
+  window.onValue = onValue;
+  onValue(ref(db,"ranking"),(snapshot) => {
+    data = snapshot.val() || {};
+  })
 </script>
 </body>
 </html>
-
